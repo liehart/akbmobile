@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiHelper {
-  final String _baseUrl = "https://8c297f49551f.ngrok.io/api/";
+  final String _baseUrl = "https://2a096bba82d2.ngrk.io/api/";
 
   Future<dynamic> get(String url) async {
     var responseJson;
     try {
       final response = await http.get(Uri.parse(_baseUrl + url));
+      print(_baseUrl + url);
       responseJson = _parseResponse(response);
     } on SocketException {
       throw SocketException("No Internet Connection");

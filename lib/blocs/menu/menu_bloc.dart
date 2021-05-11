@@ -34,12 +34,19 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     if (event is GetMenuEvent) {
       yield* _mapEventToState();
     } else if (event is GetMoreMenuEvent) {
-      yield* _mapEventToState(event.page);
+      yield* _mapEventToState(page: event.page, query: event.query, category: event.category, reset: event.reset);
     }
   }
 
-  Stream<MenuState> _mapEventToState([int page = 1]) async* {
+  Stream<MenuState> _mapEventToState({int page = 1, String query, String category, bool reset = false}) async* {
     try {
+      if (reset) {
+        _data = null;
+        _currentPage = null;
+        _totalPage = null;
+        _isLastPage = null;
+        yield MenuLoadingState();
+      }
       print(_isLastPage);
       print(_currentPage);
       if (state is MenuLoadedState) {
@@ -48,14 +55,14 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         _totalPage = (state as MenuLoadedState).totalPage;
       }
 
-      if (_currentPage != null) {
+      if (_currentPage != null && !reset) {
         yield MenuLoadMoreLoadingState();
       } else {
         yield MenuLoadingState();
       }
 
-      if (_currentPage == null || _isLastPage == null || !_isLastPage) {
-        final req = await _repository.getMenus(page);
+      if (_currentPage == null || _isLastPage == null || !_isLastPage || reset) {
+        final req = await _repository.getMenus(page: page, query: query, category: category);
 
         print(req.currentPage);
         print(req.totalPage);
@@ -65,6 +72,9 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         }
 
         if (req.data.isNotEmpty) {
+          if (reset) {
+            _data.clear();
+          }
           _data.addAll(req.data);
           _currentPage = req.currentPage;
           _totalPage = req.totalPage;

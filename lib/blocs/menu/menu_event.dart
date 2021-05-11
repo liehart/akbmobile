@@ -11,9 +11,12 @@ class GetMenuEvent extends MenuEvent {}
 
 class GetMoreMenuEvent extends MenuEvent {
   final int page;
+  final String query;
+  final String category;
+  final bool reset;
 
-  GetMoreMenuEvent(this.page);
+  GetMoreMenuEvent({this.page, this.query, this.category, this.reset});
 
   @override
-  List<Object> get props => [page];
+  List<Object> get props => [page, query, category, reset];
 }

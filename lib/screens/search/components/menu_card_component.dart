@@ -1,18 +1,13 @@
+import 'package:akbmobile/models/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class MenuCardComponent extends StatelessWidget {
-  final String imagePath;
-  final String menuName;
-  final String description;
-  final int price;
+  final Menu menu;
 
   const MenuCardComponent({
     Key key,
-    @required this.imagePath,
-    @required this.menuName,
-    @required this.description,
-    @required this.price,
+    @required this.menu,
   }) : super(key: key);
 
   @override
@@ -22,23 +17,6 @@ class MenuCardComponent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: imagePath != null ? Image.network(
-              imagePath,
-              fit: BoxFit.cover,
-              height: 100,
-              width: 100,
-            ) : Image.asset(
-              'assets/images/no_image.png',
-              fit: BoxFit.cover,
-              height: 100,
-              width: 100,
-            ),
-          ),
-          SizedBox(
-            width: 15,
-          ),
           Flexible(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -48,39 +26,53 @@ class MenuCardComponent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          menuName,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Text(
-                          NumberFormat.simpleCurrency(
-                              locale: 'id_ID', decimalDigits: 0)
-                              .format(price),
-                          style: TextStyle(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      menu.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
-                      description,
+                      menu.description,
                       style: TextStyle(color: Colors.black54),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    menu.isAvailable == 1 ? Text(
+                      menu.price > 0 ? NumberFormat.simpleCurrency(
+                          locale: 'id_ID', decimalDigits: 0)
+                          .format(menu.price) : "Gratis",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ): Text(
+                      "Tidak tersedia",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red.shade600
+                      ),
                     ),
                   ],
                 ),
               ],
             ),
+          ),
+          SizedBox(
+            width: 15,
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: menu.imagePath != null ? Image.network(
+              menu.imagePath,
+              fit: BoxFit.cover,
+              height: 80,
+              width: 80,
+            ) : null,
           ),
         ],
       ),

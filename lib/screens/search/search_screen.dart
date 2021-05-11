@@ -16,20 +16,25 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final _textEditingController = TextEditingController();
+  final _scrollController = ScrollController();
   int _selectIndex = 0;
-
-  MenuBloc _bloc;
 
   List<String> selectChips = ["All", "Main Course", "Side Dish", "Drink"];
 
+  MenuBloc _bloc;
   List<Menu> _data = [];
   int _page;
   int _totalPage;
+  String _category;
 
   @override
   void initState() {
     _textEditingController.addListener(() {
       setState(() {});
+    });
+    _scrollController.addListener(() {
+      print(_scrollController.position);
+      FocusScope.of(context).unfocus();
     });
     _bloc = MenuBloc();
     _bloc.add(GetMenuEvent());
@@ -44,7 +49,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return NotificationListener(
+      child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           centerTitle: false,
@@ -67,7 +73,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 decoration: InputDecoration(
                   isDense: true,
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                  EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -82,12 +88,16 @@ class _SearchScreenState extends State<SearchScreen> {
                   hintText: "Cari makanan enak",
                   suffixIcon: _textEditingController.text.length > 0
                       ? GestureDetector(
-                          onTap: () {
-                            FocusScope.of(context).unfocus();
-                            _textEditingController.clear();
-                          },
-                          child: Icon(Icons.clear),
-                        )
+                    onTap: () {
+                      _bloc.add(GetMoreMenuEvent(
+                          category: _category,
+                          reset: true
+                      ));
+                      FocusScope.of(context).unfocus();
+                      _textEditingController.clear();
+                    },
+                    child: Icon(Icons.clear),
+                  )
                       : null,
                 ),
               ),
@@ -149,6 +159,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: ListView(
                     children: [
                       ListView.builder(
+                        controller: _scrollController,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemCount: _data.length,
@@ -160,10 +171,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                 margin: EdgeInsets.symmetric(
                                     horizontal: 15, vertical: 10),
                                 child: MenuCardComponent(
-                                    imagePath: _data[index].imagePath,
-                                    menuName: _data[index].name,
-                                    description: _data[index].description,
-                                    price: _data[index].price),
+                                  menu: _data[index],
+                                ),
                               ),
                             ),
                           );
@@ -171,21 +180,21 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       (_page < _totalPage && state is MenuLoadedState || state is MenuLoadMoreLoadingState)
                           ? Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Center(child: CircularProgressIndicator()),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                              ],
-                            )
+                        children: [
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Center(child: CircularProgressIndicator()),
+                          SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      )
                           : SizedBox(),
                     ],
                   ),
                   onEndOfPage: () {
-                    _bloc.add(GetMoreMenuEvent(_page + 1));
+                    _bloc.add(GetMoreMenuEvent(page: _page + 1, reset: false));
                   },
                 );
               } else if (state is MenuLoadingState) {
@@ -196,7 +205,15 @@ class _SearchScreenState extends State<SearchScreen> {
                   onRetryPressed: () {},
                 );
               }
-            }));
+            }),
+      ),
+      onNotification: (notificationInfo) {
+        if (notificationInfo is ScrollStartNotification) {
+          FocusScope.of(context).unfocus();
+        }
+        return true;
+      },
+    );
   }
 }
 

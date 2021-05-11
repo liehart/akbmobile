@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:akbmobile/screens/menu/menu_screen.dart';
 import 'package:akbmobile/screens/scanqr/scanqr_screen.dart';
 import 'package:akbmobile/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -185,7 +186,13 @@ class _HomeScreenState extends State<HomeScreen>
                                               splashColor: Colors.white12,
                                               borderRadius:
                                                   BorderRadius.circular(8),
-                                              onTap: () {},
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MenuScreen()));
+                                              },
                                               child: Container(
                                                 alignment: Alignment.bottomLeft,
                                                 height: 120,
@@ -390,58 +397,68 @@ class _HomeScreenState extends State<HomeScreen>
                                     child: Material(
                                       child: InkWell(
                                         splashColor: Colors.white12,
-                                        borderRadius:
-                                        BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(8),
                                         onTap: () {
-                                          Navigator.push(context, MaterialPageRoute(
-                                            builder: (context) => ScanQRScreen()
-                                          ));
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ScanQRScreen()));
                                         },
                                         child: Container(
-                                          alignment: Alignment.bottomRight,
-                                          height: 150,
-                                          padding: EdgeInsets.all(12.0),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                                child: Text(
-                                                  "Reservation Inactive",
-                                                  style: TextStyle(
-                                                    color: Colors.white
-                                                  ),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.purpleAccent,
-                                                  borderRadius: BorderRadius.all(Radius.circular(8))
-                                                ),
-                                              ),
-                                              Column(
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                crossAxisAlignment: CrossAxisAlignment.end,
-                                                children: [
-                                                  Text(
-                                                    'Buat Pesanan',
+                                            alignment: Alignment.bottomRight,
+                                            height: 150,
+                                            padding: EdgeInsets.all(12.0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 5,
+                                                      horizontal: 10),
+                                                  child: Text(
+                                                    "Reservation Inactive",
                                                     style: TextStyle(
-                                                      fontSize: 28,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.white,
-                                                    ),
+                                                        color: Colors.white),
                                                   ),
-                                                  Text(
-                                                    'Ketuk untuk scan QR code reservasi',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.white70,
+                                                  decoration: BoxDecoration(
+                                                      color:
+                                                          Colors.purpleAccent,
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  8))),
+                                                ),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    Text(
+                                                      'Buat Pesanan',
+                                                      style: TextStyle(
+                                                        fontSize: 28,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              )
-                                            ],
-                                          )
-                                        ),
+                                                    Text(
+                                                      'Ketuk untuk scan QR code reservasi',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white70,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            )),
                                       ),
                                       color: Colors.transparent,
                                     ),
@@ -450,13 +467,11 @@ class _HomeScreenState extends State<HomeScreen>
                                         begin: Alignment.centerRight,
                                         end: Alignment.centerLeft,
                                         colors: [
-                                          Color(0xFF343434)
-                                              .withOpacity(0.6),
+                                          Color(0xFF343434).withOpacity(0.6),
                                           Colors.transparent
                                         ],
                                       ),
-                                      borderRadius:
-                                      BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                 ],
@@ -517,7 +532,8 @@ class _MainSearch extends State<MainSearch> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => SearchScreen()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => SearchScreen()));
       },
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 20),
