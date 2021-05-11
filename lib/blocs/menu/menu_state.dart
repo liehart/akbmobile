@@ -11,6 +11,8 @@ class MenuLoadingState extends MenuState {}
 
 class MenuLoadMoreLoadingState extends MenuState {}
 
+class MenuLoadedEmptyState extends MenuState {}
+
 class MenuLoadedState extends MenuState {
   final List<Menu> data;
   final int page;

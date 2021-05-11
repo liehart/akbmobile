@@ -41,14 +41,12 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
   Stream<MenuState> _mapEventToState({int page = 1, String query, String category, bool reset = false}) async* {
     try {
       if (reset) {
-        _data = null;
+        _data = [];
         _currentPage = null;
         _totalPage = null;
         _isLastPage = null;
         yield MenuLoadingState();
       }
-      print(_isLastPage);
-      print(_currentPage);
       if (state is MenuLoadedState) {
         _data = (state as MenuLoadedState).data;
         _currentPage = (state as MenuLoadedState).page;
@@ -63,24 +61,21 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
       if (_currentPage == null || _isLastPage == null || !_isLastPage || reset) {
         final req = await _repository.getMenus(page: page, query: query, category: category);
-
-        print(req.currentPage);
-        print(req.totalPage);
-
         if (req.currentPage == req.totalPage) {
           _isLastPage = true;
         }
-
+        if (reset) {
+          _data.clear();
+        }
         if (req.data.isNotEmpty) {
-          if (reset) {
-            _data.clear();
-          }
           _data.addAll(req.data);
           _currentPage = req.currentPage;
           _totalPage = req.totalPage;
+          yield MenuLoadedState(data: _data, page: _currentPage, totalPage: _totalPage);
+        } else {
+          yield MenuLoadedEmptyState();
         }
       }
-      yield MenuLoadedState(data: _data, page: _currentPage, totalPage: _totalPage);
     } catch (e) {
       yield MenuErrorState(e.toString());
     }

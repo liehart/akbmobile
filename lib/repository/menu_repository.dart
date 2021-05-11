@@ -13,7 +13,6 @@ class MenuRepository {
       url = url + "&query=$query";
     }
     final response = await _helper.get(url);
-    print(response.toString());
     return MenuResponse.fromJson(response['data']);
   }
 }

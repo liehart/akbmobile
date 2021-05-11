@@ -21,8 +21,8 @@ class _MenuScreenState extends State<MenuScreen> {
   List<Map<String, dynamic>> _categories = [
     {"name": "Semua", "value": ""},
     {"name": "Makanan", "value": "main"},
-    {"name": "Side Dish", "value": "drink"},
-    {"name": "Minuman", "value": "side_dish"}
+    {"name": "Side Dish", "value": "side_dish"},
+    {"name": "Minuman", "value": "drink"}
   ];
 
   String _selectedCategory = "";
@@ -36,6 +36,7 @@ class _MenuScreenState extends State<MenuScreen> {
   void initState() {
     _bloc = MenuBloc();
     _bloc.add(GetMenuEvent());
+    _scrollController.addListener(_onScroll);
     super.initState();
   }
 
@@ -43,163 +44,226 @@ class _MenuScreenState extends State<MenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: NestedScrollView(
+      body: CustomScrollView(
         controller: _scrollController,
-        headerSliverBuilder: (context, isScrolled) {
-          return [
-            SliverAppBar(
-              brightness: Brightness.light,
-              backgroundColor: Colors.white,
-              pinned: true,
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.search),
-                  tooltip: 'Cari menu',
-                  onPressed: () {
-                    // handle the press
-                  },
-                ),
-              ],
-              centerTitle: false,
-              title: Text(
-                "Mau makan apa?",
-                style: TextStyle(color: Colors.black),
+        physics: ClampingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+            pinned: true,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.search),
+                tooltip: 'Cari menu',
+                onPressed: () {
+                  // handle the press
+                },
               ),
-              iconTheme: IconThemeData(color: Colors.black87),
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(55),
-                child: Container(
-                  color: Colors.white,
-                  height: 55,
-                  width: double.infinity,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    physics: ClampingScrollPhysics(),
-                    children: List.generate(_categories.length, (index) {
-                      return Padding(
-                        padding: (index == 0)
-                            ? EdgeInsets.only(left: 15, right: 12)
-                            : EdgeInsets.only(right: 12),
-                        child: ChoiceChip(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(
+            ],
+            centerTitle: false,
+            title: Text(
+              "Mau makan apa?",
+              style: TextStyle(color: Colors.black),
+            ),
+            iconTheme: IconThemeData(color: Colors.black87),
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(55),
+              child: Container(
+                color: Colors.white,
+                height: 55,
+                width: double.infinity,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  physics: ClampingScrollPhysics(),
+                  children: List.generate(_categories.length, (index) {
+                    return Padding(
+                      padding: (index == 0)
+                          ? EdgeInsets.only(left: 15, right: 12)
+                          : EdgeInsets.only(right: 12),
+                      child: ChoiceChip(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                            color: (_categories[index]['value'] ==
+                                _selectedCategory)
+                                ? Colors.red
+                                : Colors.black12.withOpacity(0.07),
+                          ),
+                        ),
+                        backgroundColor: Colors.black12.withOpacity(0.01),
+                        selected: _categories[index]['value'] ==
+                            _selectedCategory,
+                        selectedColor: Colors.redAccent.withOpacity(0.3),
+                        pressElevation: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        label: Text(
+                          _categories[index]['name'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
                               color: (_categories[index]['value'] ==
                                   _selectedCategory)
                                   ? Colors.red
-                                  : Colors.black12.withOpacity(0.07),
-                            ),
-                          ),
-                          backgroundColor: Colors.black12.withOpacity(0.01),
-                          selected: _categories[index]['value'] ==
-                              _selectedCategory,
-                          selectedColor: Colors.redAccent.withOpacity(0.3),
-                          pressElevation: 0,
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          label: Text(
-                            _categories[index]['name'],
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: (_categories[index]['value'] ==
-                                    _selectedCategory)
-                                    ? Colors.red
-                                    : Colors.black.withOpacity(0.7)),
-                          ),
-                          onSelected: (bool value) {
-                            setState(() {
-                              _selectedCategory = _categories[index]['value'];
-                            });
-                            if (_selectedCategory.isNotEmpty) {
-                              _bloc.add(GetMoreMenuEvent(page: 1, reset: true, category: _selectedCategory));
-                            } else {
-                              _bloc.add(GetMoreMenuEvent(page: 1, reset: true));
-                            }
-                          },
+                                  : Colors.black.withOpacity(0.7)),
                         ),
-                      );
-                    }),
-                  ),
+                        onSelected: (bool value) {
+                          setState(() {
+                            _selectedCategory = _categories[index]['value'];
+                          });
+                          if (_selectedCategory.isNotEmpty) {
+                            _bloc.add(GetMoreMenuEvent(page: 1, reset: true, category: _selectedCategory));
+                          } else {
+                            _bloc.add(GetMoreMenuEvent(page: 1, reset: true));
+                          }
+                        },
+                      ),
+                    );
+                  }),
                 ),
               ),
             ),
-          ];
-        },
-        body: BlocBuilder<MenuBloc, MenuState>(
-          bloc: _bloc,
-          builder: (context, state) {
-            if (state is MenuLoadedState || state is MenuLoadMoreLoadingState) {
-              if (state is MenuLoadedState) {
-                _data = state.data;
-                _page = state.page;
-                _totalPage = state.totalPage;
-              }
-              return LazyLoadScrollView(
-                child: MediaQuery.removePadding(
-                  removeTop: true,
-                  context: context,
-                  child: ListView(
-                    shrinkWrap: true,
-                    physics: ClampingScrollPhysics(),
-                    children: [
-                      ListView.builder(
-                        key: ObjectKey(_data.hashCode),
-                        controller: _scrollController,
-                        shrinkWrap: true,
-                        itemCount: _data.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            child: InkWell(
-                              onTap: () {
-                                _showErrorOnScanQRCode(_data[index]);
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 10),
-                                child: MenuCardComponent(
-                                  menu: _data[index],
-                                ),
+          ),
+          BlocBuilder<MenuBloc, MenuState>(
+            bloc: _bloc,
+            builder: (context, state) {
+              if (state is MenuLoadedState || state is MenuLoadMoreLoadingState) {
+                if (state is MenuLoadedState) {
+                  _data = state.data;
+                  _page = state.page;
+                  _totalPage = state.totalPage;
+                }
+                return SliverPadding(
+                  padding: EdgeInsets.only(bottom: 40),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return index >= _data.length ? Container(
+                          margin: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              backgroundColor: Colors.redAccent.withOpacity(0.5),
+                              valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+                            ),
+                          ),
+                        ) : Container(
+                          child: InkWell(
+                            onTap: () {
+                              _showErrorOnScanQRCode(_data[index]);
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 10),
+                              child: MenuCardComponent(
+                                menu: _data[index],
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        );
+                      },
+                      childCount: (_page < _totalPage) ? _data.length + 1 : _data.length,
+                    ),
+                  ),
+                );
+              }
+              if (state is MenuLoadingState) {
+                _scrollController.animateTo(0, duration: new Duration(milliseconds: 1), curve: Curves.ease);
+                return SliverFillRemaining(
+                  hasScrollBody: false,
+                  fillOverscroll: true,
+                  child: Container(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.redAccent.withOpacity(0.5),
+                        valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
                       ),
-                      (_page < _totalPage && state is MenuLoadedState ||
-                          state is MenuLoadMoreLoadingState)
-                          ? Column(
-                        children: [
-                          SizedBox(
-                            height: 10,
+                    ),
+                  ),
+                );
+              }
+              if (state is MenuLoadedEmptyState) {
+                return SliverFillRemaining(
+                  hasScrollBody: false,
+                  fillOverscroll: true,
+                  child: Container(
+                    child:  Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
+                          child: Image.asset(
+                            'assets/images/empty_error.png',
+                            fit: BoxFit.cover,
+                            width: MediaQuery.of(context).size.width * 0.7,
                           ),
-                          Center(child: CircularProgressIndicator()),
-                          SizedBox(
-                            height: 10,
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(top: 20),
+                            child: Text(
+                              "Sepertinya tidak ada menu dengan kategori ini",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return SliverFillRemaining(
+                hasScrollBody: false,
+                fillOverscroll: true,
+                child: Container(
+                  child: GestureDetector(
+                    onTap: () {
+                      _bloc.add(GetMenuEvent());
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.1),
+                          child: Image.asset(
+                            'assets/images/fatal_error.png',
+                            fit: BoxFit.cover,
+                            width: MediaQuery.of(context).size.width * 0.7,
                           ),
-                        ],
-                      )
-                          : SizedBox(),
-                    ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20),
+                          child: Text(
+                            (state is MenuErrorState)
+                                ? (state).message
+                                : "Telah terjadi error",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Text(
+                            "Ketuk untuk mengulang",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black45,
+                                fontWeight: FontWeight.w300
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                onEndOfPage: () {
-                  if (_selectedCategory.isNotEmpty) {
-                    _bloc.add(GetMoreMenuEvent(page: _page + 1, reset: false, category: _selectedCategory));
-                  } else {
-                    _bloc.add(GetMoreMenuEvent(page: _page + 1, reset: false));
-                  }
-                },
               );
-            } else if (state is MenuLoadingState) {
-              _scrollController.animateTo(0, duration: new Duration(milliseconds: 1), curve: Curves.ease);
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return Center(
-                child: Text(state.toString()),
-              );
-            }
-          },
-        ),
+            },
+          ),
+        ],
       ),
     );
   }
@@ -317,4 +381,15 @@ class _MenuScreenState extends State<MenuScreen> {
     );
   }
 
+  void _onScroll() {
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    if (maxScroll - currentScroll <= 250) {
+      if (_selectedCategory.isNotEmpty) {
+        _bloc.add(GetMoreMenuEvent(page: _page + 1, reset: false, category: _selectedCategory));
+      } else {
+        _bloc.add(GetMoreMenuEvent(page: _page + 1, reset: false));
+      }
+    }
+  }
 }
