@@ -71,10 +71,8 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
           _data.addAll(req.data);
           _currentPage = req.currentPage;
           _totalPage = req.totalPage;
-          yield MenuLoadedState(data: _data, page: _currentPage, totalPage: _totalPage);
-        } else {
-          yield MenuLoadedEmptyState();
         }
+        yield MenuLoadedState(data: _data, page: _currentPage, totalPage: _totalPage);
       }
     } catch (e) {
       yield MenuErrorState(e.toString());

@@ -1,10 +1,11 @@
 import 'package:akbmobile/blocs/menu/menu_bloc.dart';
 import 'package:akbmobile/models/menu.dart';
-import 'package:akbmobile/screens/search/components/menu_card_component.dart';
+import 'package:akbmobile/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+
+import 'components/menu_card_component.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({
@@ -57,7 +58,9 @@ class _MenuScreenState extends State<MenuScreen> {
                 icon: Icon(Icons.search),
                 tooltip: 'Cari menu',
                 onPressed: () {
-                  // handle the press
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SearchScreen()));
                 },
               ),
             ],
