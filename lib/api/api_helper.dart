@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiHelper {
-  final String _baseUrl = "https://7b4be30aa751.ngrok.io/api/";
+  final String _baseUrl = "https://api.atmakoreanbbq.com/api/";
 
   Future<dynamic> get(String url) async {
     var responseJson;
