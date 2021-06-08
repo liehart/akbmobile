@@ -5,17 +5,10 @@ class MenuResponse {
   final int totalPage;
   final List<Menu> data;
 
-  MenuResponse({
-    this.currentPage,
-    this.totalPage,
-    this.data
-  });
+  MenuResponse({this.currentPage, this.totalPage, this.data});
 
   factory MenuResponse.fromJson(Map<String, dynamic> json) => MenuResponse(
-    currentPage: json['current_page'],
-    totalPage: json['last_page'],
-    data: List<Menu>.from(
-      json['data'].map((x) => Menu.fromJson(x))
-    )
-  );
+      currentPage: json['current_page'],
+      totalPage: json['last_page'],
+      data: List<Menu>.from(json['data'].map((x) => Menu.fromJson(x))));
 }

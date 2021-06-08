@@ -8,16 +8,15 @@ class Menu {
   final int isAvailable;
   final String imagePath;
 
-  Menu({
-    this.id,
-    this.name,
-    this.description,
-    this.category,
-    this.unit,
-    this.price,
-    this.isAvailable,
-    this.imagePath
-  });
+  Menu(
+      {this.id,
+      this.name,
+      this.description,
+      this.category,
+      this.unit,
+      this.price,
+      this.isAvailable,
+      this.imagePath});
 
   factory Menu.fromJson(Map<String, dynamic> json) => Menu(
       id: json['id'],
@@ -27,6 +26,5 @@ class Menu {
       unit: json['unit'],
       price: json['price'],
       isAvailable: json['is_available'],
-      imagePath: json['image_path']
-  );
+      imagePath: json['image_path']);
 }

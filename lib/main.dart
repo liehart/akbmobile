@@ -1,5 +1,4 @@
 import 'package:akbmobile/screens/home/home_screen.dart';
-import 'package:akbmobile/screens/scanqr/scanqr_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

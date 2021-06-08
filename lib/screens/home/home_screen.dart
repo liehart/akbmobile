@@ -1,11 +1,13 @@
-import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:akbmobile/screens/menu/menu_screen.dart';
+import 'package:akbmobile/screens/reservation/order.dart';
+import 'package:akbmobile/screens/reservation/reservation.dart';
 import 'package:akbmobile/screens/scanqr/scanqr_screen.dart';
 import 'package:akbmobile/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 const double minHeight = 400;
@@ -26,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen>
   double get maxHeight => MediaQuery.of(context).size.height;
 
   PanelController _panelController;
-
+  String _token;
   @override
   void initState() {
     super.initState();
@@ -35,6 +37,15 @@ class _HomeScreenState extends State<HomeScreen>
       duration: Duration(milliseconds: 60),
     );
     _panelController = PanelController();
+    _loadToken();
+  }
+
+  void _loadToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    print(prefs.getString('token'));
+    setState(() {
+      _token = (prefs.getString('token') ?? null);
+    });
   }
 
   @override
@@ -48,50 +59,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> popularMenus = [
-      {
-        "imagePath": "assets/images/makanan_image.png",
-        "menuName": "Beef Short Plate",
-        "price": 20000,
-        "description":
-            "Potongan daging sapi dari bagian otot perut, bentuknya panjang dan datar"
-      },
-      {
-        "imagePath": "assets/images/makanan_image.png",
-        "menuName": "Beef Short Plate",
-        "price": 20000,
-        "description":
-            "Potongan daging sapi dari bagian otot perut, bentuknya panjang dan datar"
-      },
-      {
-        "imagePath": "assets/images/makanan_image.png",
-        "menuName": "Beef Short Plate",
-        "price": 20000,
-        "description":
-            "Potongan daging sapi dari bagian otot perut, bentuknya panjang dan datar"
-      },
-      {
-        "imagePath": "assets/images/makanan_image.png",
-        "menuName": "Beef Short Plate",
-        "price": 20000,
-        "description":
-            "Potongan daging sapi dari bagian otot perut, bentuknya panjang dan datar"
-      },
-      {
-        "imagePath": "assets/images/makanan_image.png",
-        "menuName": "Beef Short Plate",
-        "price": 20000,
-        "description":
-            "Potongan daging sapi dari bagian otot perut, bentuknya panjang dan datar"
-      },
-      {
-        "imagePath": "assets/images/makanan_image.png",
-        "menuName": "Beef Short Plate",
-        "price": 20000,
-        "description":
-            "Potongan daging sapi dari bagian otot perut, bentuknya panjang dan datar"
-      }
-    ];
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(children: [
@@ -252,13 +219,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                   splashColor: Colors.white12,
                                                   borderRadius:
                                                       BorderRadius.circular(8),
-                                                  onTap: () {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(SnackBar(
-                                                      content: Text('Tap'),
-                                                    ));
-                                                  },
+                                                  onTap: () {},
                                                   child: Container(
                                                     alignment:
                                                         Alignment.bottomLeft,
@@ -316,11 +277,13 @@ class _HomeScreenState extends State<HomeScreen>
                                                   borderRadius:
                                                       BorderRadius.circular(8),
                                                   onTap: () {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(SnackBar(
-                                                      content: Text('Tap'),
-                                                    ));
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ReservationScreen(),
+                                                      ),
+                                                    );
                                                   },
                                                   child: Container(
                                                     alignment:
@@ -399,11 +362,22 @@ class _HomeScreenState extends State<HomeScreen>
                                         splashColor: Colors.white12,
                                         borderRadius: BorderRadius.circular(8),
                                         onTap: () {
-                                          Navigator.push(
+                                          if (_token != "" && _token != null) {
+                                            Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      ScanQRScreen()));
+                                                      OrderScreen()),
+                                            ).then((value) => _loadToken());
+                                          } else {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ScanQRScreen(),
+                                              ),
+                                            ).then((value) => _loadToken());
+                                          }
                                         },
                                         child: Container(
                                             alignment: Alignment.bottomRight,
@@ -421,17 +395,21 @@ class _HomeScreenState extends State<HomeScreen>
                                                       vertical: 5,
                                                       horizontal: 10),
                                                   child: Text(
-                                                    "Reservation Inactive",
+                                                    _token == null
+                                                        ? 'Reservasi Tidak Aktif'
+                                                        : 'Reservasi Aktif',
                                                     style: TextStyle(
                                                         color: Colors.white),
                                                   ),
                                                   decoration: BoxDecoration(
-                                                      color:
-                                                          Colors.purpleAccent,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  8))),
+                                                    color: _token == null
+                                                        ? Colors.red
+                                                        : Colors.green,
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                      Radius.circular(8),
+                                                    ),
+                                                  ),
                                                 ),
                                                 Column(
                                                   mainAxisAlignment:
@@ -490,35 +468,6 @@ class _HomeScreenState extends State<HomeScreen>
         // ReservationBottomSheet(),
       ]),
     );
-  }
-
-  void _showPanel() {
-    _panelController.show();
-  }
-
-  void _toggle() {
-    final bool isOpen = _controller.status == AnimationStatus.completed;
-    _controller.fling(velocity: isOpen ? -2 : 2);
-  }
-
-  void _handleDragUpdate(DragUpdateDetails details) {
-    _controller.value -= details.primaryDelta / maxHeight;
-    print('Naikkk');
-  }
-
-  void _handleDragEnd(DragEndDetails details) {
-    if (_controller.isAnimating ||
-        _controller.status == AnimationStatus.completed) return;
-
-    final double flingVelocity =
-        details.velocity.pixelsPerSecond.dy / maxHeight;
-    if (flingVelocity < 0.0) {
-      _controller.fling(velocity: math.max(2.0, -flingVelocity));
-    } else if (flingVelocity > 0.0) {
-      _controller.fling(velocity: math.min(-2.0, -flingVelocity));
-    } else {
-      _controller.fling(velocity: _controller.value < 0.5 ? -2.0 : 2.0);
-    }
   }
 }
 

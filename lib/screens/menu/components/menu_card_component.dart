@@ -43,20 +43,23 @@ class MenuCardComponent extends StatelessWidget {
                     SizedBox(
                       height: 5,
                     ),
-                    menu.isAvailable == 1 ? Text(
-                      menu.price > 0 ? NumberFormat.simpleCurrency(
-                          locale: 'id_ID', decimalDigits: 0)
-                          .format(menu.price) : "Gratis",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ): Text(
-                      "Tidak tersedia",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.red.shade600
-                      ),
-                    ),
+                    menu.isAvailable == 1
+                        ? Text(
+                            menu.price > 0
+                                ? NumberFormat.simpleCurrency(
+                                        locale: 'id_ID', decimalDigits: 0)
+                                    .format(menu.price)
+                                : "Gratis",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        : Text(
+                            "Tidak tersedia",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.red.shade600),
+                          ),
                   ],
                 ),
               ],
@@ -67,12 +70,14 @@ class MenuCardComponent extends StatelessWidget {
           ),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: menu.imagePath != null ? Image.network(
-              menu.imagePath,
-              fit: BoxFit.cover,
-              height: 80,
-              width: 80,
-            ) : null,
+            child: menu.imagePath != null
+                ? Image.network(
+                    menu.imagePath,
+                    fit: BoxFit.cover,
+                    height: 80,
+                    width: 80,
+                  )
+                : null,
           ),
         ],
       ),

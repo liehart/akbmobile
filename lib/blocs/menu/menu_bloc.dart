@@ -4,7 +4,6 @@ import 'package:akbmobile/models/menu.dart';
 import 'package:akbmobile/repository/menu_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'menu_event.dart';
@@ -19,12 +18,12 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
 
   MenuBloc() : super(MenuLoadingState());
 
-
   @override
   Stream<Transition<MenuEvent, MenuState>> transformEvents(
       Stream<MenuEvent> events,
       TransitionFunction<MenuEvent, MenuState> transitionFn) {
-    return super.transformEvents(events.debounceTime(Duration(milliseconds: 500)), transitionFn);
+    return super.transformEvents(
+        events.debounceTime(Duration(milliseconds: 500)), transitionFn);
   }
 
   @override
@@ -34,11 +33,19 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
     if (event is GetMenuEvent) {
       yield* _mapEventToState();
     } else if (event is GetMoreMenuEvent) {
-      yield* _mapEventToState(page: event.page, query: event.query, category: event.category, reset: event.reset);
+      yield* _mapEventToState(
+          page: event.page,
+          query: event.query,
+          category: event.category,
+          reset: event.reset);
     }
   }
 
-  Stream<MenuState> _mapEventToState({int page = 1, String query, String category, bool reset = false}) async* {
+  Stream<MenuState> _mapEventToState(
+      {int page = 1,
+      String query,
+      String category,
+      bool reset = false}) async* {
     try {
       if (reset) {
         _data = [];
@@ -59,8 +66,12 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
         yield MenuLoadingState();
       }
 
-      if (_currentPage == null || _isLastPage == null || !_isLastPage || reset) {
-        final req = await _repository.getMenus(page: page, query: query, category: category);
+      if (_currentPage == null ||
+          _isLastPage == null ||
+          !_isLastPage ||
+          reset) {
+        final req = await _repository.getMenus(
+            page: page, query: query, category: category);
         if (req.currentPage == req.totalPage) {
           _isLastPage = true;
         }
@@ -72,7 +83,8 @@ class MenuBloc extends Bloc<MenuEvent, MenuState> {
           _currentPage = req.currentPage;
           _totalPage = req.totalPage;
         }
-        yield MenuLoadedState(data: _data, page: _currentPage, totalPage: _totalPage);
+        yield MenuLoadedState(
+            data: _data, page: _currentPage, totalPage: _totalPage);
       }
     } catch (e) {
       yield MenuErrorState(e.toString());

@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ApiHelper {
-  final String _baseUrl = "https://api.atmakoreanbbq.com/api/";
+  final String _baseUrl = "https://d79e1d9a7845.ngrok.io/api/";
 
   Future<dynamic> get(String url) async {
     var responseJson;
@@ -22,6 +20,10 @@ class ApiHelper {
       throw SocketException("No Internet Connection");
     }
     return responseJson;
+  }
+
+  String getBaseUrl() {
+    return _baseUrl;
   }
 }
 
